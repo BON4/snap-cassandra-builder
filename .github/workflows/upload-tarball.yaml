@@ -16,19 +16,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-launchpadlib
 
-      - name: Upload to Launchpad (dry-run example)
+      - name: Upload to Launchpad
         env:
           LP_CREDENTIALS: ${{ secrets.LAUNCHPAD_CREDS }}
         run: |
-          mkdir ~/.cache
+          mkdir -p ~/.cache
           echo "$LP_CREDENTIALS" > ~/.cache/lp-creds
           chmod 600 ~/.cache/lp-creds
-
-          cat > upload.py <<EOF
-import launchpadlib.launchpad
-lp = launchpadlib.launchpad.Launchpad.login_with('Cassandra Uploader', 'production', version='devel', credentials_file='~/.cache/lp-creds')
-project = lp.projects['cassandra-releases']
-project.add_attachment(open('cassandra.tar.gz', 'rb'), 'cassandra-4.1.3.tar.gz', 'application/gzip')
-EOF
-
-          python3 upload.py
+      
+          python3 scripts/upload_to_launchpad.py
